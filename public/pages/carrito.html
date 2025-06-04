@@ -1,0 +1,33 @@
+<!-- public/pages/carrito.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Carrito de Compras</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+   <!-- Navbar -->
+<nav class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center shadow-md">
+  <h1 class="text-xl font-semibold">🛍️ Mi Tienda</h1>
+  <div class="space-x-4">
+    <a href="home.html" class="hover:underline">Inicio</a>
+    <a href="carrito.html" class="hover:underline">🛒 Carrito</a>
+    <a href="ventas.html" class="hover:underline">📦 Ventas</a>
+  </div>
+</nav>
+
+  <!-- Contenedor -->
+  <div class="p-4">
+    <div id="carritoContainer" class="space-y-4"></div>
+
+    <div class="mt-6 text-right">
+      <p class="text-xl font-bold">Total: $<span id="totalCarrito">0.00</span></p>
+      <button id="comprarBtn" class="mt-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Comprar</button>
+    </div>
+  </div>
+
+  <script src="../js/carrito.js"></script>
+</body>
+</html>

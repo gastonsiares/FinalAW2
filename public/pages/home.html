@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tienda</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+  <!-- Navbar -->
+<nav class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center shadow-md">
+  <h1 class="text-xl font-semibold">🛍️ Mi Tienda</h1>
+  <div class="space-x-4">
+    <a href="home.html" class="hover:underline">Inicio</a>
+    <a href="carrito.html" class="hover:underline">🛒 Carrito</a>
+    <a href="ventas.html" class="hover:underline">📦 Ventas</a>
+  </div>
+</nav>
+
+
+  <!-- Filtro por categoría -->
+  <div class="p-4">
+    <label for="filtroCategoria" class="font-medium">Filtrar por categoría:</label>
+    <select id="filtroCategoria" class="ml-2 p-2 border border-gray-300 rounded">
+      <option value="todos">Todos</option>
+    </select>
+  </div>
+
+  <!-- Contenedor de productos -->
+  <div id="productosContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
+    <!-- Cards generadas desde JS -->
+  </div>
+
+  <script src="../js/home.js"></script>
+
+</body>
+</html>

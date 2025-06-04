@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1748988044313,
+    "id_usuario": 1,
+    "fecha": "2025-06-03",
+    "direccion": "Av. Siempre Viva 742",
+    "productos": [
+      {
+        "id": 103,
+        "cantidad": 1,
+        "precio_unitario": 31999
+      },
+      {
+        "id": 102,
+        "cantidad": 2,
+        "precio_unitario": 29999
+      },
+      {
+        "id": 101,
+        "cantidad": 1,
+        "precio_unitario": 14999.99
+      }
+    ],
+    "total": 106996.99
+  }
+]
