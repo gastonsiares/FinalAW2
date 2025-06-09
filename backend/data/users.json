@@ -1,16 +1,23 @@
 [
-    {
-        "name": "Juan",
-        "lastname": "Perez",
-        "username": "JuanP",
-        "pass": "pass1",
-        "id": 10
-    },
-    {
-        "name": "Pedro",
-        "lastname": "Lopez",
-        "username": "PedroP",
-        "pass": "pass2",
-        "id": 11
-    }
+  {
+    "name": "Juan",
+    "lastname": "Perez",
+    "username": "JuanP",
+    "pass": "pass1",
+    "id": 10
+  },
+  {
+    "name": "Pedro",
+    "lastname": "Lopez",
+    "username": "PedroP",
+    "pass": "pass2",
+    "id": 11
+  },
+  {
+    "name": "Gaston Maximiliano",
+    "lastname": "Siares",
+    "username": "Gaston495",
+    "pass": "$2b$08$tH1uaND5FpLh3n9uj7oCLerqPPuDPe0BswnRf2RV7EJs68pJS.VZO",
+    "id": 12
+  }
 ]

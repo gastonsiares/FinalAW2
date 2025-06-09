@@ -22,5 +22,57 @@
       }
     ],
     "total": 106996.99
+  },
+  {
+    "id": 1749081374764,
+    "id_usuario": 1,
+    "fecha": "2025-06-04",
+    "direccion": "Av. Siempre Viva 742",
+    "productos": [
+      {
+        "id": 102,
+        "cantidad": 1,
+        "precio_unitario": 29999
+      }
+    ],
+    "total": 29999
+  },
+  {
+    "id": 1749495538705,
+    "id_usuario": 12,
+    "fecha": "2025-06-09",
+    "direccion": "Av. Siempre Viva 742",
+    "productos": [
+      {
+        "id": 103,
+        "cantidad": 1,
+        "precio_unitario": 31999
+      },
+      {
+        "id": 101,
+        "cantidad": 1,
+        "precio_unitario": 14999.99
+      },
+      {
+        "id": 105,
+        "cantidad": 1,
+        "precio_unitario": 359999.99
+      }
+    ],
+    "total": 406998.98
+  },
+  {
+    "id": 1749496522267,
+    "id_usuario": 12,
+    "fecha": "2025-06-09",
+    "direccion": "Quiroga 21 Bouwer, Cordoba",
+    "productos": [
+      {
+        "id": 110,
+        "cantidad": 2,
+        "precio_unitario": 31999
+      }
+    ],
+    "total": 63998
   }
 ]

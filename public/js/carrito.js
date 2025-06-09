@@ -1,12 +1,12 @@
+// public/js/carrito.js
 document.addEventListener('DOMContentLoaded', () => {
     const carritoContainer = document.getElementById('carritoContainer');
     const totalSpan = document.getElementById('totalCarrito');
     const btnComprar = document.getElementById('comprarBtn');
+    const direccionInput = document.getElementById('direccion');
 
     let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-
-    const usuarioActivo = 1; // Remplazar cuando usemos el login
-    const direccion = "Av. Siempre Viva 742"; // Remplazar cuando usemos la direccion del usuario
+    const token = localStorage.getItem('token');
 
     function renderCarrito() {
         carritoContainer.innerHTML = '';
@@ -31,7 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         totalSpan.textContent = total.toFixed(2);
 
-        // Botones para eliminar productos del carrito
         document.querySelectorAll('button[data-index]').forEach(btn => {
             btn.addEventListener('click', e => {
                 const index = e.target.dataset.index;
@@ -50,9 +49,19 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        if (!token) {
+            alert('Debes iniciar sesión para realizar una compra.');
+            window.location.href = '/auth/login.html';
+            return;
+        }
+
+        const direccion = direccionInput.value.trim();
+        if (!direccion) {
+            alert('Por favor ingresá una dirección de envío.');
+            return;
+        }
+
         const orden = {
-            id_usuario: usuarioActivo,
-            fecha: new Date().toISOString().split('T')[0],
             direccion,
             productos: carrito.map(p => ({
                 id: p.id,
@@ -65,22 +74,27 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch('http://localhost:3000/ventas', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(orden)
         })
-        .then(res => {
-            if (res.ok) {
-                alert('¡Compra realizada con éxito!');
-                localStorage.removeItem('carrito');
-                location.reload();
-            } else {
-                alert('Error al procesar la compra');
-            }
-        })
-        .catch(err => {
-            console.error('Error al enviar la orden:', err);
-            alert('Error al conectar con el servidor');
-        });
+            .then(res => {
+                if (res.ok) {
+                    alert('¡Compra realizada con éxito!');
+                    localStorage.removeItem('carrito');
+                    location.reload();
+                } else if (res.status === 401 || res.status === 403) {
+                    alert('No estás autorizado. Inicia sesión nuevamente.');
+                    localStorage.removeItem('token');
+                    window.location.href = '/auth/login.html';
+                } else {
+                    alert('Error al procesar la compra');
+                }
+            })
+            .catch(err => {
+                console.error('Error al enviar la orden:', err);
+                alert('Error al conectar con el servidor');
+            });
     });
 });
