@@ -1,38 +1,40 @@
-
 document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('productosContainer');
     const filtro = document.getElementById('filtroCategoria');
 
     let productos = [];
 
-    // Obtener productos desde el backend
+    //Obtener productos desde el backend
     fetch('http://localhost:3000/productos')
         .then(res => res.json())
         .then(data => {
             productos = data;
+            console.log('📦 Productos cargados:', productos); // Verificar en consola
             cargarCategorias(productos);
             mostrarProductos(productos);
+        })
+        .catch(err => {
+            console.error(' Error al cargar productos:', err);
         });
 
-    // Mostrar productos en cards
     function mostrarProductos(lista) {
         container.innerHTML = '';
         lista.forEach(producto => {
             const card = document.createElement('div');
             card.className = 'bg-white shadow-md rounded p-4';
             card.innerHTML = `
-        <img src="${producto.imagen}" alt="${producto.nombre}" class="w-full h-48 object-cover rounded mb-2">
-        <h2 class="text-lg font-bold">${producto.nombre}</h2>
-        <p class="text-gray-600">${producto.desc}</p>
-        <p class="text-green-600 font-semibold mt-2">$${producto.precio.toFixed(2)}</p>
-        <button data-id="${producto.id}" class="mt-3 w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 agregarBtn">
-          Agregar al carrito
-        </button>
-      `;
+                <img src="${producto.imagen}" alt="${producto.nombre}" class="w-full h-60 object-cover rounded mb-2">
+                <h2 class="text-lg font-bold">${producto.nombre}</h2>
+                <p class="text-gray-600">${producto.descripcion}</p>
+                <p class="text-green-600 font-semibold mt-2">$${Number(producto.precio).toFixed(2)}</p>
+                <button data-id="${producto.id}" class="mt-3 w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 agregarBtn">
+                    Agregar al carrito
+                </button>
+            `;
             container.appendChild(card);
         });
 
-        // Botones "Agregar al carrito"
+        //Botones "Agregar al carrito"
         document.querySelectorAll('.agregarBtn').forEach(btn => {
             btn.addEventListener('click', e => {
                 const id = parseInt(e.target.dataset.id);
@@ -42,7 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Agregar al carrito en localStorage
     function agregarAlCarrito(producto) {
         let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
         const index = carrito.findIndex(p => p.id === producto.id);
@@ -55,18 +56,17 @@ document.addEventListener('DOMContentLoaded', () => {
         alert('Producto agregado al carrito');
     }
 
-    // Cargar opciones de categorías únicas
     function cargarCategorias(lista) {
         const categorias = ['todos', ...new Set(lista.map(p => p.categoria))];
+        filtro.innerHTML = ''; // Limpiar antes de cargar
         categorias.forEach(cat => {
             const option = document.createElement('option');
             option.value = cat;
-            option.textContent = cat;
+            option.textContent = cat.charAt(0).toUpperCase() + cat.slice(1); // Capitaliza
             filtro.appendChild(option);
         });
     }
 
-    // Filtrar al cambiar categoría
     filtro.addEventListener('change', () => {
         const valor = filtro.value;
         if (valor === 'todos') {

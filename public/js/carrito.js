@@ -1,100 +1,116 @@
-// public/js/carrito.js
+import { actualizarCantidadNavbar } from './navbar.js';
+
 document.addEventListener('DOMContentLoaded', () => {
-    const carritoContainer = document.getElementById('carritoContainer');
+    const container = document.getElementById('carritoContainer');
     const totalSpan = document.getElementById('totalCarrito');
-    const btnComprar = document.getElementById('comprarBtn');
+    const comprarBtn = document.getElementById('comprarBtn');
     const direccionInput = document.getElementById('direccion');
 
     let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-    const token = localStorage.getItem('token');
 
     function renderCarrito() {
-        carritoContainer.innerHTML = '';
+        container.innerHTML = '';
         let total = 0;
 
+        if (carrito.length === 0) {
+            container.innerHTML = '<p class="text-gray-600">El carrito está vacío</p>';
+            totalSpan.textContent = '0.00';
+            return;
+        }
+
         carrito.forEach((producto, index) => {
-            total += producto.precio * producto.cantidad;
+            const precio = Number(producto.precio);
+            const subtotal = precio * producto.cantidad;
+            total += subtotal;
 
             const item = document.createElement('div');
-            item.className = 'bg-white p-4 rounded shadow flex justify-between items-center';
+            item.className = 'bg-white p-4 rounded shadow';
 
             item.innerHTML = `
-                <div>
-                    <h2 class="font-bold">${producto.nombre}</h2>
-                    <p>$${producto.precio.toFixed(2)} x ${producto.cantidad}</p>
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-4">
+                        <img src="${producto.imagen}" alt="${producto.nombre}" class="w-20 h-20 object-cover rounded" />
+                        <div>
+                            <h3 class="text-lg font-semibold">${producto.nombre}</h3>
+                            <p class="text-gray-600">${producto.descripcion}</p>
+                            <p class="text-green-600 font-bold">$${subtotal.toFixed(2)}</p>
+                            <div class="flex items-center space-x-2 mt-2">
+                                <button class="disminuir px-2 bg-gray-300">-</button>
+                                <span>${producto.cantidad}</span>
+                                <button class="aumentar px-2 bg-gray-300">+</button>
+                                <button class="eliminar text-red-600 ml-4">Eliminar</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <button class="text-red-600 hover:underline" data-index="${index}">Eliminar</button>
             `;
 
-            carritoContainer.appendChild(item);
+            item.querySelector('.aumentar').addEventListener('click', () => {
+                carrito[index].cantidad++;
+                actualizarStorageYRender();
+            });
+
+            item.querySelector('.disminuir').addEventListener('click', () => {
+                if (carrito[index].cantidad > 1) {
+                    carrito[index].cantidad--;
+                    actualizarStorageYRender();
+                }
+            });
+
+            item.querySelector('.eliminar').addEventListener('click', () => {
+                carrito.splice(index, 1);
+                actualizarStorageYRender();
+            });
+
+            container.appendChild(item);
         });
 
         totalSpan.textContent = total.toFixed(2);
-
-        document.querySelectorAll('button[data-index]').forEach(btn => {
-            btn.addEventListener('click', e => {
-                const index = e.target.dataset.index;
-                carrito.splice(index, 1);
-                localStorage.setItem('carrito', JSON.stringify(carrito));
-                renderCarrito();
-            });
-        });
     }
 
-    renderCarrito();
+    function actualizarStorageYRender() {
+        localStorage.setItem('carrito', JSON.stringify(carrito));
+        renderCarrito();
+        actualizarCantidadNavbar();
+    }
 
-    btnComprar.addEventListener('click', () => {
-        if (carrito.length === 0) {
-            alert('El carrito está vacío');
-            return;
-        }
-
-        if (!token) {
-            alert('Debes iniciar sesión para realizar una compra.');
-            window.location.href = '/auth/login.html';
-            return;
-        }
-
+    //Comprar
+    comprarBtn.addEventListener('click', async () => {
         const direccion = direccionInput.value.trim();
         if (!direccion) {
-            alert('Por favor ingresá una dirección de envío.');
+            alert('Debes ingresar una dirección de envío.');
             return;
         }
 
-        const orden = {
-            direccion,
-            productos: carrito.map(p => ({
-                id: p.id,
-                cantidad: p.cantidad,
-                precio_unitario: p.precio
-            })),
-            total: carrito.reduce((acc, p) => acc + p.precio * p.cantidad, 0)
-        };
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('Debes estar logueado para comprar.');
+            return;
+        }
 
-        fetch('http://localhost:3000/ventas', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(orden)
-        })
-            .then(res => {
-                if (res.ok) {
-                    alert('¡Compra realizada con éxito!');
-                    localStorage.removeItem('carrito');
-                    location.reload();
-                } else if (res.status === 401 || res.status === 403) {
-                    alert('No estás autorizado. Inicia sesión nuevamente.');
-                    localStorage.removeItem('token');
-                    window.location.href = '/auth/login.html';
-                } else {
-                    alert('Error al procesar la compra');
-                }
-            })
-            .catch(err => {
-                console.error('Error al enviar la orden:', err);
-                alert('Error al conectar con el servidor');
+        try {
+            const res = await fetch('/ventas', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ direccion, productos: carrito })
             });
+
+            const data = await res.json();
+            if (res.ok) {
+                alert('Compra realizada con éxito');
+                localStorage.removeItem('carrito');
+                location.reload();
+            } else {
+                alert(data.msg || 'Error al procesar la compra');
+            }
+        } catch (err) {
+            console.error('Error al comprar:', err);
+            alert('Error en la conexión con el servidor');
+        }
     });
+
+    renderCarrito();
 });

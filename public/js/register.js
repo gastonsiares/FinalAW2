@@ -7,23 +7,28 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = {
             name: document.getElementById('name').value,
             lastname: document.getElementById('lastname').value,
+            email: document.getElementById('email').value,
             username: document.getElementById('username').value,
             pass: document.getElementById('pass').value,
         };
 
-        const res = await fetch('/user/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
+        try {
+            const res = await fetch('/user/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
 
-        const result = await res.json();
-
-        if (result.status) {
-            alert('Usuario registrado con éxito');
-            window.location.href = '/auth/login.html';
-        } else {
-            alert('❌ Error: ' + (result.msg || 'No se pudo registrar'));
+            const result = await res.json();
+            if (result.status) {
+                alert('Usuario registrado correctamente');
+                window.location.href = '/auth/login.html';
+            } else {
+                alert(result.msg || 'Error al registrar');
+            }
+        } catch (error) {
+            console.error('Error al registrar usuario:', error);
+            alert('Error en la conexión');
         }
     });
 });

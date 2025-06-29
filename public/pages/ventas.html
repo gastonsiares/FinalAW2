@@ -1,24 +1,84 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ventas Realizadas</title>
+  <meta charset="UTF-8" />
+  <title>Ventas (Admin)</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100">
 
+<body class="bg-gray-100">
   <!-- Navbar -->
   <div id="navbar"></div>
 
-  <div class="p-6">
-    <h2 class="text-2xl font-bold mb-4">Ventas realizadas</h2>
-    <div id="ventasContainer" class="space-y-4">
-      <!-- Aca se van a mostar las ventas "esto es un control para confirmar si se cargaron" -->
-    </div>
-  </div>
+  <main class="max-w-5xl mx-auto mt-8 px-4">
+    <h1 class="text-3xl font-bold mb-6">📊 Ventas registradas</h1>
 
-  <script src="/js/ventas.js"></script>
-  <script src="/js/navbar.js" type="module"></script>
+    <div id="ventasContainer" class="space-y-4"></div>
+  </main>
+
+  <script type="module">
+    import '/js/navbar.js';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const token = localStorage.getItem('token');
+      const container = document.getElementById('ventasContainer');
+
+      if (!token) {
+        window.location.href = '/auth/login.html';
+        return;
+      }
+
+      try {
+        // Decodificamos el token para saber el rol
+        const resToken = await fetch('/user/decodeToken', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token })
+        });
+
+        const decoded = await resToken.json();
+        if (decoded.rol !== 'admin') {
+          container.innerHTML = `<p class="text-red-600 font-semibold">Acceso denegado: solo administradores</p>`;
+          return;
+        }
+
+        // Si es admin, pedimos las ventas
+        const res = await fetch('/ventas/admin', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        const ventas = await res.json();
+
+        if (ventas.length === 0) {
+          container.innerHTML = '<p class="text-gray-600">No hay ventas registradas.</p>';
+          return;
+        }
+
+        ventas.forEach(v => {
+          const div = document.createElement('div');
+          div.className = 'bg-white p-4 rounded shadow';
+          div.innerHTML = `
+            <p><strong>ID Venta:</strong> ${v.id}</p>
+            <p><strong>Usuario:</strong> ${v.username}</p>
+            <p><strong>Fecha:</strong> ${new Date(v.fecha).toLocaleString()}</p>
+            <p><strong>Dirección:</strong> ${v.direccion}</p>
+            <p class="font-bold">Total: $${parseFloat(v.total || 0).toFixed(2)}</p>
+
+
+          `;
+          container.appendChild(div);
+        });
+
+      } catch (error) {
+        container.innerHTML = '<p class="text-red-600">Error al cargar ventas</p>';
+        console.error(error);
+      }
+    });
+  </script>
 </body>
+
 </html>

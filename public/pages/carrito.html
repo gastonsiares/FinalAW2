@@ -1,9 +1,8 @@
-<!-- public/pages/carrito.html -->
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Carrito de Compras</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -13,36 +12,33 @@
   <!-- Navbar -->
   <div id="navbar"></div>
 
-  <!-- Contenedor principal -->
-  <div class="p-4 max-w-3xl mx-auto">
+ 
+  <main class="p-4 max-w-3xl mx-auto">
+    <h1 class="text-2xl font-bold mb-6">🛒 Carrito de Compras</h1>
 
-    <!-- Carrito -->
+    
     <div id="carritoContainer" class="space-y-4 mb-6"></div>
 
-    <!-- Total y dirección -->
+    <!-- Total y compra -->
     <div class="bg-white p-4 rounded shadow">
-      <p class="text-xl font-bold mb-4">Total: $<span id="totalCarrito">0.00</span></p>
+      <p class="text-xl font-bold mb-4">
+        Total: $<span id="totalCarrito">0.00</span>
+      </p>
 
-      <label for="direccion" class="block font-semibold mb-1">Dirección de envío:</label>
-      <input
-        type="text"
-        id="direccion"
-        class="p-2 border border-gray-300 rounded w-full mb-4"
-        placeholder="Ej: Calle Falsa 123"
-        required
-      />
+      <label for="direccion" class="block font-semibold mb-1">
+        Dirección de envío:
+      </label>
+      <input type="text" id="direccion" class="p-2 border border-gray-300 rounded w-full mb-4"
+        placeholder="Ej: Av. Siempre Viva 742" required />
 
-      <button
-        id="comprarBtn"
-        class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 w-full"
-      >
+      <button id="comprarBtn" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 w-full">
         Comprar
       </button>
     </div>
+  </main>
 
-  </div>
-
-  <script src="../js/carrito.js"></script>
+  <!-- Scripts -->
+  <script src="../js/carrito.js" type="module"></script>
   <script src="/js/navbar.js" type="module"></script>
 </body>
 
