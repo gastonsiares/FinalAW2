@@ -4,7 +4,7 @@ import { verificarToken } from '../middleware/auth.js';
 
 const router = Router();
 
-//Registrar una nueva venta (requiere token)
+//Registrar una nueva venta
 router.post('/', verificarToken, async (req, res) => {
     const { direccion, productos } = req.body;
     const id_usuario = req.user.id;
@@ -20,14 +20,12 @@ router.post('/', verificarToken, async (req, res) => {
     try {
         await conn.beginTransaction();
 
-        //Insertar venta
         const [ventaResult] = await conn.query(
             'INSERT INTO ventas (id_usuario, fecha, direccion, total) VALUES (?, ?, ?, ?)',
             [id_usuario, fecha, direccion, total]
         );
         const id_venta = ventaResult.insertId;
 
-        //Insertar detalle de cada producto
         for (const producto of productos) {
             await conn.query(
                 'INSERT INTO detalle_ventas (id_venta, id_producto, cantidad, precio_unitario) VALUES (?, ?, ?, ?)',
@@ -46,7 +44,7 @@ router.post('/', verificarToken, async (req, res) => {
     }
 });
 
-//Obtener las ventas del usuario actual
+// Obtener ventas del usuario actual
 router.get('/mis-ventas', verificarToken, async (req, res) => {
     const id_usuario = req.user.id;
 
@@ -70,15 +68,39 @@ router.get('/admin', verificarToken, async (req, res) => {
 
     try {
         const [ventas] = await connection.query(`
-      SELECT v.*, u.username 
-      FROM ventas v
-      JOIN users u ON v.id_usuario = u.id
-      ORDER BY v.fecha DESC
-    `);
+            SELECT v.*, u.username 
+            FROM ventas v
+            JOIN users u ON v.id_usuario = u.id
+            ORDER BY v.fecha DESC
+        `);
         res.status(200).json(ventas);
     } catch (error) {
         console.error('Error al obtener ventas para admin:', error.message);
         res.status(500).json({ error: 'Error al obtener ventas' });
+    }
+});
+
+//NUEVA RUTA: Historial de compras detallado del usuario logueado
+router.get('/historial', verificarToken, async (req, res) => {
+    const idUsuario = req.user.id;
+
+    try {
+        const [ventas] = await connection.query(
+            `SELECT v.id, v.fecha, v.total, 
+                    GROUP_CONCAT(p.nombre, ' (x', dv.cantidad, ')') AS productos
+             FROM ventas v
+             JOIN detalle_ventas dv ON v.id = dv.id_venta
+             JOIN productos p ON dv.id_producto = p.id
+             WHERE v.id_usuario = ?
+             GROUP BY v.id
+             ORDER BY v.fecha DESC`, 
+             [idUsuario]
+        );
+
+        res.status(200).json(ventas);
+    } catch (error) {
+        console.error('Error al obtener historial:', error.message);
+        res.status(500).json({ error: 'Error al consultar historial de compras' });
     }
 });
 
